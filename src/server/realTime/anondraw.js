@@ -13,13 +13,25 @@ var options = {
 var port = process.argv[2];
 if (!port) throw "No port provided!";
 
-var server = https.createServer(options);
-server.listen(port);
+var server = https.createServer(options, handler);
+function handler (req, res) {
+    // Set CORS headers
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Request-Method', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'OPTIONS, GET');
+    res.setHeader('Access-Control-Allow-Headers', '*');
+    if ( req.method === 'OPTIONS' ) {
+        res.writeHead(200);
+        res.end();
+        return;
+    }
+    res.writeHead(200);
+    res.end("Sup");
+}
+server.listen(config.service.realtime.port);
 
 // Socket library
-var io = require('socket.io')(server, {
-	transports: ['websocket']
-});
+var io = require('socket.io')(server);
 
 // Library to register to the main server
 var Register = require("./scripts/Register.js");

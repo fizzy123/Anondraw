@@ -14,7 +14,7 @@ function Register (server, key, io, port, listenServer) {
 	this.listenServer = listenServer;
 
 	this.key = key;
-	this.port = port;
+	this.port = config.service.realtime.port;
 	this.io = io;
 
 	this.updateInterval;
@@ -110,6 +110,7 @@ Register.prototype.register = function register () {
 
 	req.on("error", function (e) {
 		console.log(config.insecure);
+		console.log(e);
 		
 		throw e.message;
 	});

@@ -153,7 +153,7 @@ Network.prototype.changeServer = function changeServer (server, callback) {
 		this.socket.disconnect();
 	}
 
-	this.socket = io(server, { transports: ['websocket'], forceNew: true });
+	this.socket = io(server, { forceNew: true });
 	this.reBindHandlers();
 	callback();
 };

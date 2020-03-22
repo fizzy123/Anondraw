@@ -19,7 +19,7 @@ var mkdirp = require('mkdirp');
 var room_regex = /^[a-z0-9_]+$/i;
 var currentlyDrawing = {};
 
-fs.readFile("./images/background.png", function (err, transparentBytes) {
+fs.readFile(config.baseDir + "src/server/imageServer/images/background.png", function (err, transparentBytes) {
 	if (err) throw "Transparent image unavailable! Err: " + err;
 
 	transparent = new Canvas.Image();
@@ -29,7 +29,7 @@ fs.readFile("./images/background.png", function (err, transparentBytes) {
 		var tiledCanvas = new TiledCanvas();
 
 		tiledCanvas.requestUserChunk = function (x, y, callback) {
-			fs.readFile("./images/" + room + "/" + x + "_" + y + ".png", function (err, imgBytes) {
+			fs.readFile(config.baseDir + "src/server/imageServer/images/" + room + "/" + x + "_" + y + ".png", function (err, imgBytes) {
 				if (err) {
 					if (err.code !== "ENOENT") {
 						throw "Image load error: " + err;
@@ -71,7 +71,7 @@ fs.readFile("./images/background.png", function (err, transparentBytes) {
 				return;
 			}
 
-			fs.readFile("./images/" + room + "/" + x + "_" + y + ".png", function (err, data) {
+			fs.readFile(config.baseDir + "src/server/imageServer/images/" + room + "/" + x + "_" + y + ".png", function (err, data) {
 				if (err && err.code === "ENOENT") {
 					res.writeHead(200, {
 						"Access-Control-Allow-Origin": "*",
@@ -118,7 +118,7 @@ fs.readFile("./images/background.png", function (err, transparentBytes) {
 				return;
 			}
 			
-			fs.readdir("./images/" + room, function (err, items) {
+			fs.readdir(config.baseDir + "src/server/imageServer/images/" + room, function (err, items) {
 				if (err && err.code == "ENOENT") {
 					res.end(JSON.stringify({
 						err: null,
@@ -199,7 +199,7 @@ fs.readFile("./images/background.png", function (err, transparentBytes) {
 					return;
 				}
 				
-				mkdirp('./images/' + room, function (err) {
+				mkdirp(config.baseDir + "src/server/imageServer/images/" + room, function (err) {
 					if (err) {
 						res.end('{"error": "Faulty directory"}');
 						console.log("Error creating image folder for room", room, err);
@@ -217,7 +217,7 @@ fs.readFile("./images/background.png", function (err, transparentBytes) {
 								return;
 							}
 
-							fs.writeFile("./images/" + room + "/" + x + "_" + y + ".png", bytes, function (err) {
+							fs.writeFile(config.baseDir + "src/server/imageServer/images/" + room + "/" + x + "_" + y + ".png", bytes, function (err) {
 								if (err) {
 									console.log("[DRAW][ERROR] Save image error", err);
 									callback();

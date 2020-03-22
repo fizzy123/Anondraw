@@ -75,7 +75,7 @@ CREATE TABLE IF NOT EXISTS reputations (
 	source INT UNSIGNED DEFAULT 0,
 	weight DECIMAL(5, 2) DEFAULT 1,
     PRIMARY KEY (id),
-    INDEX(to_id, from_id)
+    INDEX(to_id, from_id),
     INDEX(from_id, to_id)
 );
 
@@ -113,11 +113,6 @@ CREATE TABLE IF NOT EXISTS ipbans (
     INDEX (ip, enddate)
 );
 
---alter table regions add id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY FIRST; 
---ALTER TABLE regions ADD minRepAllowed int UNSIGNED
-
---Need above for the production server when permissions are done^^
-
 CREATE TABLE IF NOT EXISTS regions (
     id INT UNSIGNED NOT NULL AUTO_INCREMENT,
     PRIMARY KEY (id),
@@ -132,7 +127,6 @@ CREATE TABLE IF NOT EXISTS regions (
     INDEX (room),
     INDEX (owner, maxX, minX, maxY, minY, room)
 );
-ALTER TABLE regions ADD COLUMN name VARCHAR(255);
 
 CREATE TABLE IF NOT EXISTS regions_permissions (
     regionId INT UNSIGNED,

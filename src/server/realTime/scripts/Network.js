@@ -625,6 +625,7 @@ Protocol.prototype.bindIO = function bindIO () {
 				user: "SERVER",
 				message: "No ip found!"
 			});
+			console.log(1);
 			socket.disconnect();
 		}
 
@@ -1251,6 +1252,7 @@ Protocol.prototype.bindIO = function bindIO () {
 		});
 
 		socket.on("changeroom", function (room, callback) {
+			console.log("changeroom")
 			// User wants to change hes room, subscribe the socket to the
 			// given room, tell the user he is subscribed and send the drawing.
 			// Callback (err, drawings)
@@ -1445,6 +1447,8 @@ Protocol.prototype.bindIO = function bindIO () {
 						protocol.drawTogether.undoDrawings(usersWithSameIp[k].room, usersWithSameIp[k].id, true);
 						protocol.io.to(usersWithSameIp[k].room).emit("undodrawings", usersWithSameIp[k].id, true);
 						
+
+			console.log(2);
 						usersWithSameIp[k].disconnect();
 					}
 				});
@@ -1464,6 +1468,8 @@ Protocol.prototype.bindIO = function bindIO () {
 						protocol.drawTogether.undoDrawings(usersWithSameIp[k].room, usersWithSameIp[k].id, true);
 						protocol.io.to(usersWithSameIp[k].room).emit("undodrawings", usersWithSameIp[k].id, true);
 						
+
+			console.log(3);
 						usersWithSameIp[k].disconnect();
 					}
 					
