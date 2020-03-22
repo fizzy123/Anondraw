@@ -7,14 +7,13 @@ var drawcode = config.service.image.password.draw;
 var Canvas = require("canvas");
 var TiledCanvas = require("./scripts/TiledCanvas.js");
 var fs = require('graceful-fs');
+var callbackify = require("util").callbackify;
 
 var options = {
   key: fs.readFileSync(config.permfolder + '/privkey.pem'),
   cert: fs.readFileSync(config.permfolder + '/cert.pem'),
   ca: fs.readFileSync(config.permfolder + '/chain.pem')
 };
-
-var mkdirp = require('mkdirp');
 
 var room_regex = /^[a-z0-9_]+$/i;
 var currentlyDrawing = {};
@@ -199,7 +198,7 @@ fs.readFile(config.baseDir + "src/server/imageServer/images/background.png", fun
 					return;
 				}
 				
-				mkdirp(config.baseDir + "src/server/imageServer/images/" + room, function (err) {
+				fs.mkdir(config.baseDir + "src/server/imageServer/images/" + room, {recursive: true}, function (err) {
 					if (err) {
 						res.end('{"error": "Faulty directory"}');
 						console.log("Error creating image folder for room", room, err);
