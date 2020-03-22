@@ -103,29 +103,6 @@ function DrawTogether (container, settings, emotesHash, account, router, pms) {
 
 	setInterval(this.displayTip.bind(this), 5 * 60 * 1000);
 	setTimeout(this.autoMoveScreen.bind(this), 0);
-	
-	
-	setInterval(function () {
-		if (!this.memberlevel) {
-			// Fix for the ad that sometimes appears randomly
-			var prevAd = document.getElementById("amzn-assoc-ad-123acff2-6857-4569-a250-fd703f6a941d");
-			prevAd.parentNode.removeChild()
-			
-			// Amazon ad code
-			var div = document.createElement("div");
-			var ad = div.appendChild(document.createElement("div"));
-			ad.id = "amzn-assoc-ad-123acff2-6857-4569-a250-fd703f6a941d";
-			
-			var script = div.appendChild(document.createElement("script"));
-			script.src = "//z-na.amazon-adsystem.com/widgets/onejs?MarketPlace=US&adInstanceId=123acff2-6857-4569-a250-fd703f6a941d";
-			this.chat.addElementAsMessage(div);
-			
-			// Fix for adding multiple ads with the same id
-			setTimeout(function () {
-				ad.id = "";
-			}, 1000);
-		}
-	}.bind(this), 10 * 60 * 1000);
 }
 
 // Hardcoded values who should probably be refactored to the server
@@ -840,25 +817,6 @@ DrawTogether.prototype.changeRoom = function changeRoom (room, number, x, y, spe
 			this.paint.changeTool("grab");
 			this.paint.addPublicDrawings(this.decodeDrawings(drawings));
 			this.chat.addMessage("Invite people", "https://www.anondraw.com/#" + room + number);
-			
-			
-			setTimeout(function () {
-				if (!this.memberlevel) {
-					// Fix for the ad that sometimes appears randomly
-					var prevAd = document.getElementById("amzn-assoc-ad-123acff2-6857-4569-a250-fd703f6a941d");
-					prevAd.parentNode.removeChild()
-					// Amazon ad code
-					var div = document.createElement("div");
-					var ad = div.appendChild(document.createElement("div"));
-					ad.id = "amzn-assoc-ad-123acff2-6857-4569-a250-fd703f6a941d";
-					var script = div.appendChild(document.createElement("script"));
-					script.src = "//z-na.amazon-adsystem.com/widgets/onejs?MarketPlace=US&adInstanceId=123acff2-6857-4569-a250-fd703f6a941d";
-					this.chat.addElementAsMessage(div);
-					setTimeout(function () {
-						ad.id = "";
-					}, 1000);
-				}
-			}.bind(this), 15000);
 			
 			if(this.account.uKey) {
 				this.getFavorites();

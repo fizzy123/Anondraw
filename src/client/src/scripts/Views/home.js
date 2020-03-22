@@ -39,27 +39,6 @@ Anondraw.prototype.createHome = function createHome () {
 	tryButton.setAttribute("data-navigo", "");
 	
 	/*
-		In between features ad
-	*/
-	
-	var adContainer = container.appendChild(document.createElement("div"));
-	
-	var ad = adContainer.appendChild(document.createElement("div"));
-	ad.id = "amzn-assoc-ad-123acff2-6857-4569-a250-fd703f6a941d";
-	
-	var script = adContainer.appendChild(document.createElement("script"));
-	script.src = "//z-na.amazon-adsystem.com/widgets/onejs?MarketPlace=US&adInstanceId=123acff2-6857-4569-a250-fd703f6a941d";
-	script.onload = function () {
-		setTimeout(function () {
-			adContainer.className = "adcontainer";
-		}, 950);
-		
-		setTimeout(function () {
-			ad.id = "";
-		}, 1250);
-	};
-	
-	/*
 		Socialize feature
 	*/
 	var feature = container.appendChild(document.createElement("div"));
