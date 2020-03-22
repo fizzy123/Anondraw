@@ -19,13 +19,10 @@ function DrawTogether (container, settings, emotesHash, account, router, pms) {
 	this.myRegions = [];
 	this.clickableAreas = []; // [{ id, owner: id, url: "url or x,y", x: INT, y: INT, width: INT, height: INT, room: STRING, element: <HTML Element> }]
 	this.myAnimations = this.getAnimationsFromCookie();
-	this.ink = 0;
 	this.nextTip = 0;
-	this.previousInk = Infinity;
 
 	this.MAX_REP_TO_DISPLAY = 300; // if a pregion's minRepAllowed is higher than this. don't mention it to user.
 
-	this.lastInkWarning = 0;        // Last time we showed that we are out of ink
 	this.lastBrushSizeWarning = 0;  // Last time we showed the warning that our brush is too big
 	this.lastZoomWarning = 0;       // Last time we showed the zoom warning
 	this.lastViewDeduction = 0;     // Time since we last deducted someones viewscore
@@ -51,8 +48,6 @@ function DrawTogether (container, settings, emotesHash, account, router, pms) {
 	// Initialize the dom elements
 	this.initDom();
 	this.gui = new Gui(container);
-
-	this.updateInk();
 
 	// Ask the player what to do or connect to the server
 	if (this.settings.mode == "ask") {
@@ -137,7 +132,6 @@ function DrawTogether (container, settings, emotesHash, account, router, pms) {
 DrawTogether.prototype.KICKBAN_MIN_REP = 50;
 DrawTogether.prototype.REGION_MIN_REP = 30;
 DrawTogether.prototype.MODERATE_REGION_MIN_REP = 100;
-DrawTogether.prototype.IGNORE_INK_REP = 50;
 
 // After how much time should we remind moderators of their duty?
 DrawTogether.prototype.MODERATORWELCOMEWINDOWOPENAFTER = 2 * 7 * 24 * 60 * 60 * 1000;
@@ -726,11 +720,6 @@ DrawTogether.prototype.bindSocketHandlers = function bindSocketHandlers () {
 		moderatorGuidelines.style.cursor = "pointer";
 		self.chat.addElementAsMessage(moderatorGuidelines);
 	});
-
-	this.network.on("setink", function (ink) {
-		self.ink = ink;
-		self.updateInk();
-	});
 };
 
 DrawTogether.prototype.sendMessage = function sendMessage (message) {
@@ -1019,35 +1008,6 @@ DrawTogether.prototype.setPlayerPosition = function setPlayerPosition (id, posit
 			this.playerList[k].viewScore += 100;
 		}
 	}
-};
-
-DrawTogether.prototype.updateInk = function updateInk () {
-	// Remove the previous text
-	while (this.inkDom.firstChild) this.inkDom.removeChild(this.inkDom.firstChild);
-	this.inkDom.appendChild(document.createTextNode("Ink: " + Math.floor(this.ink) + "/200000"));
-
-	var width = Math.floor(Math.max(this.ink / 2000, 0));
-	if (!this.lastInkWidth || this.lastInkWidth !== width) {
-		this.inkDom.style.width = width + "%";
-		this.lastInkWidth = width;
-	}
-
-	// If ink is below 3000 => set class low
-	// if ink is below 8000 => set class middle
-	// otherwise remove classes
-	// previousInk is used so we don't switch classes every time
-	if (this.previousInk >= 3000 && this.ink < 3000) {
-		this.inkDom.classList.add("drawtogether-ink-low");
-		this.inkDom.classList.remove("drawtogether-ink-middle");
-	} else if (this.previousInk >= 8000 && this.ink < 8000) {
-		this.inkDom.classList.add("drawtogether-ink-middle");
-		this.inkDom.classList.remove("drawtogether-ink-low");
-	} else if (this.previousInk < 8000 && this.ink >= 8000) {
-		this.inkDom.classList.remove("drawtogether-ink-middle");
-		this.inkDom.classList.remove("drawtogether-ink-low");
-	}
-	
-	this.previousInk = this.ink;
 };
 
 DrawTogether.prototype.sendDrawing = function sendDrawing (drawing, callback) {
@@ -1597,7 +1557,7 @@ DrawTogether.prototype.createDrawZone = function createDrawZone () {
 		// Lower our ink with how much it takes to draw this
 		// Only do that if we are connected and in a room that does not start with private_ or game_
 		if (this.current_room.indexOf("private_") !== 0 && this.current_room.indexOf("game_") !== 0
-			&& (this.reputation || 0) < this.IGNORE_INK_REP && !this.memberlevel) {
+			&& !this.memberlevel) {
 
 			if (!(this.reputation >= this.BIG_BRUSH_MIN_REP) &&
 			    ((event.drawing.size > 20 && typeof event.drawing.text == "undefined") || event.drawing.size > 20)) {
@@ -1606,19 +1566,6 @@ DrawTogether.prototype.createDrawZone = function createDrawZone () {
 					this.lastBrushSizeWarning = Date.now();
 				}
 
-				event.removeDrawing();
-				return;
-			}
-
-			// When a drawing is made check if we have ink left
-			var usage = this.inkUsageFromDrawing(event.drawing);
-			if (this.ink < usage) {
-				if (Date.now() - this.lastInkWarning > 5000) {
-					this.chat.addMessage("Not enough ink! You will regain ink every few seconds.");
-					this.chat.addMessage("Tip: Small brushes use less ink.");
-					this.chat.addMessage("Tip: logged in users receive more ink");
-					this.lastInkWarning = Date.now();
-				}
 				event.removeDrawing();
 				return;
 			}
@@ -1634,8 +1581,6 @@ DrawTogether.prototype.createDrawZone = function createDrawZone () {
 				return;
 			}
 
-			this.ink -= usage;
-			this.updateInk();
 		}
 
 		// Send the drawing to the server and remove from the local
@@ -2456,7 +2401,7 @@ DrawTogether.prototype.handlePaintUserPathPoint = function handlePaintUserPathPo
 	// Lower our ink with how much it takes to draw this
 	// Only do that if we are connected and in a room that does not start with private_ or game_
 	if (this.current_room.indexOf("private_") !== 0 && this.current_room.indexOf("game_") !== 0
-		&& (this.reputation || 0) < this.IGNORE_INK_REP && !this.memberlevel) {
+		&& !this.memberlevel) {
 
 		if (!(this.reputation >= this.BIG_BRUSH_MIN_REP) && this.lastPathSize > 20) {
 			if (Date.now() - this.lastBrushSizeWarning > 5000) {
@@ -2464,19 +2409,6 @@ DrawTogether.prototype.handlePaintUserPathPoint = function handlePaintUserPathPo
 				this.lastBrushSizeWarning = Date.now();
 			}
 
-			event.removePathPoint();
-			return;
-		}
-
-		// When a drawing is made check if we have ink left
-		var usage = this.inkUsageFromPath(event.point, this.lastPathPoint, this.lastPathSize);
-		if (this.ink < usage) {
-			if (Date.now() - this.lastInkWarning > 20000) {
-				this.chat.addMessage("CLIENT", "Not enough ink! You will regain ink every 20 seconds.");
-				this.chat.addMessage("CLIENT", "Tip: Small brushes use less ink.");
-				this.chat.addMessage("CLIENT", "Tip: logged in users receive more ink");
-				this.lastInkWarning = Date.now();
-			}
 			event.removePathPoint();
 			return;
 		}
@@ -2491,9 +2423,6 @@ DrawTogether.prototype.handlePaintUserPathPoint = function handlePaintUserPathPo
 			event.removePathPoint();
 			return;
 		}
-
-		this.ink -= usage;
-		this.updateInk();
 	}
 	
 	this.network.socket.emit("pp", event.point, timeoutCallback(function (success, timeOut) {
@@ -3696,38 +3625,13 @@ DrawTogether.prototype.createMessage = function createMessage () {
 	this.messageDom.className = "drawtogether-general-message";
 };
 
-// Returns the inkusage for a pathpoint
-// (point1, point2, size) or (point1, undefined, size)
-DrawTogether.prototype.inkUsageFromPath = function inkUsageFromPath (point1, point2, size) {
-	var length = size + (point2 ? this.utils.distance(point1[0], point1[1], point2[0], point2[1]) : 0);
-	return Math.ceil(size * length / 25);
-};
-
-DrawTogether.prototype.inkUsageFromDrawing = function inkUsageFromDrawing (drawing) {
-	// If its a brush the ink usage is (size * size)
-	// If it is a line the ink usage is (size * length)
-	var length = drawing.size;
-
-	if (typeof drawing.x1 == "number")
-		length = this.utils.distance(drawing.x, drawing.y, drawing.x1, drawing.y1);
-
-	if (typeof drawing.text == "string")
-		length *= drawing.text.length;
-
-	return Math.ceil(drawing.size * length / 25);
-};
-
 DrawTogether.prototype.createRoomInformation = function createRoomInformation () {
 	var infoContainer = this.container.appendChild(document.createElement("div"));
 	infoContainer.className = "drawtogether-info-container";
 	this.infoContainer = infoContainer;
 
 	var inkContainer = infoContainer.appendChild(document.createElement("div"));
-	inkContainer.className = "drawtogether-ink-container";
 	inkContainer.setAttribute("data-intro", "You can only draw if you have ink. You will slowly get more ink. Creating an account gives you more ink.");
-
-	this.inkDom = inkContainer.appendChild(document.createElement("div"));
-	this.inkDom.className = "drawtogether-ink";
 
 	this.playerListDom = infoContainer.appendChild(document.createElement("div"));
 	this.playerListDom.className = "drawtogether-info-playerlist";
@@ -5607,9 +5511,6 @@ DrawTogether.prototype.createFAQDom = function createFAQDom () {
 	},  {
 		question: "How do you play the game?",
 		answer: "It's a drawsomething pictionairy like game. You play the game by drawing the word you get. Then other people have to guess what you draw. The person that guessed the drawing and the drawer get a point."
-	}, {
-		question: "Why can't I draw? How do I regain Ink?",
-		answer: "You probably don't have any ink left. You can get more ink by waiting 30 seconds. If you still don't get enough ink try making an account, the more reputation you have the more ink you get."
 	}, {
 		question: "What is that number with an R behind peoples names?",
 		answer: "That is the amount of reputation someone has. The more they have the more benefits they get."

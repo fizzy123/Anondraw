@@ -16,7 +16,6 @@ var MAX_USERS_IN_GAMEROOM = 12;
 var KICKBAN_MIN_REP = 50;                 // Reputation required to kickban
 var REQUIRED_REP_DIFFERENCE = 20;         // Required reputation difference to be allowed to kickban someone
 
-var IGNORE_INK_REP = 50;
 var BIG_BRUSH_MIN_REP = 5;
 var MEMBER_MIN_REP = 15;
 var UPVOTE_MIN_REP = 7;                  // Has to be changed in the playerserver too
@@ -28,9 +27,6 @@ var MODERATE_REGION_MIN_REP = 100;
 
 var DRAWING_TYPES = ["brush", "line", "block", "path", "text"];
 
-// Ink settings
-var MAX_INK = 200000;
-var MAX_GUEST_INK = 5000;
 var MAX_SIZE = 100;
 var MAX_DISTANCE_FROM_LINE_START = 5000;
 
@@ -41,8 +37,6 @@ var PER_REP_GEN = 1500;
 var FORGET_SOCKET_AFTER = 18 * 60 * 1000;
 
 var INFORM_CLIENT_TIME_BETWEEN_MESSAGE = 1000;
-
-var SAME_IP_INK_MESSAGE = "You will get less ink because someone else on your ip has already gotten some. If you get an account with more than " + SHARE_IP_MIN_REP + " reputation you will get full ink.";
 
 var PERMISSIONS = {
 	DRAWING: 1,
@@ -98,7 +92,6 @@ function Protocol (io, drawtogether, imgur, players, register, saveAndShutdown) 
 
 	this.gameRooms = {};
 	this.leftSocketIpAndId = {};  // socketid: {ip: "", uKey: "", rep: rep, time: Date.now()}
-	setInterval(this.inkTick.bind(this), 5 * 1000);
 	setInterval(this.clearLeftTick.bind(this, 180 * 1000));
 }
 
@@ -478,37 +471,6 @@ Protocol.prototype.clearLeftTick = function clearLeftTick () {
 	}
 };
 
-Protocol.prototype.inkTick = function inkTick () {
-	var ips = [];
-
-	for (var id in this.io.nsps['/'].connected) {
-		var socket = this.io.nsps['/'].connected[id];
-		var divide = 1;
-
-		if (ips.indexOf(socket.ip) !== -1 && socket.reputation < SHARE_IP_MIN_REP) {
-			if (Date.now() - socket.lastIpInkMessage > 60000) {
-				this.informClient(socket, SAME_IP_INK_MESSAGE);
-				socket.lastIpInkMessage = Date.now();
-			}
-			
-			// We divide the ink we get by 2 for every shared ip
-			for (var k = 0; k < ips.length; k++)
-				if (ips[k] === socket.ip) divide *= 2;
-		}
-
-		// If ink is NaN we need to reset it
-		if (socket.ink !== socket.ink) socket.ink = 0;
-
-		var extra = (BASE_GEN + PER_REP_GEN * (socket.reputation || 0)) / divide;
-		socket.ink = Math.min(socket.ink + extra, socket.uKey ? MAX_INK : MAX_GUEST_INK);
-
-		socket.emit("setink", socket.ink);
-
-		if (socket.reputation < SHARE_IP_MIN_REP)
-			ips.push(socket.ip);
-	}
-};
-
 Protocol.prototype.sendAnimationMessage = function sendAnimationMessage (room, data) {
 	console.log("[ANIMATIONMESSAGE][" + room + "] " + data.user);
 	this.io.to(room).emit("chatanimation", data);
@@ -611,11 +573,6 @@ Protocol.prototype.bindIO = function bindIO () {
 	var protocol = this;
 
 	this.io.on("connection", function (socket) {
-		socket.ink = 50;
-		socket.emit("setink", socket.ink);
-		
-		socket.lastIpInkMessage = Date.now();
-
 		socket.permissions = {}; //{someid: true/false}
 		socket.messages = {};
 		socket.ip = socket.client.conn.remoteAddress;
@@ -1103,20 +1060,6 @@ Protocol.prototype.bindIO = function bindIO () {
 				return;
 			}
 
-			// If we aren't in a private room, check our ink
-			if (socket.room.indexOf("private_") !== 0 && socket.room.indexOf("game_") !== 0 
-				&& socket.reputation < IGNORE_INK_REP && !socket.memberlevel) {
-				var usage = protocol.drawTogether.inkUsageFromDrawing(drawing);
-
-				if (socket.ink < usage) {
-					protocol.informClient(socket, "Not enough ink!");
-					callback();
-					return;
-				}
-
-				socket.ink -= usage;
-			}
-
 			drawing.socketid = socket.id;
 			protocol.drawTogether.addDrawing(socket.room, drawing, function () {
 				protocol.sendDrawing(socket.room, socket.id, drawing);
@@ -1222,20 +1165,6 @@ Protocol.prototype.bindIO = function bindIO () {
 				protocol.informClient(socket, "This region is protected!");
 				callback(regionData);
 				return;
-			}
-
-			// If we aren't in a private room, check our ink
-			if (socket.room.indexOf("private_") !== 0 && socket.room.indexOf("game_") !== 0 
-				&& !(socket.reputation > IGNORE_INK_REP) && !socket.memberlevel) {
-				var usage = protocol.drawTogether.inkUsageFromPath(point, socket.lastPathPoint, socket.lastPathSize);
-
-				if (socket.ink < usage) {
-					protocol.informClient(socket, "Not enough ink!");
-					callback(false);
-					return;
-				}
-
-				socket.ink -= usage;
 			}
 			
 			// Yeah we need to take into account negative rep for the special snowflakes that are willing to pay for it

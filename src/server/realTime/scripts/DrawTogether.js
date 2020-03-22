@@ -165,24 +165,6 @@ DrawTogether.prototype.getPaths = function getPaths (room, callback) {
 	callback(null, this.paths[room] || {});
 };
 
-DrawTogether.prototype.inkUsageFromDrawing = function inkUsageFromDrawing (drawing) {
-	// If its a brush the ink usage is (size * size)
-	// If it is a line the ink usage is (size * length)
-	var length = drawing.size;
-
-	if (typeof drawing.x1 == "number")
-		length = this.utils.distance(drawing.x, drawing.y, drawing.x1, drawing.y1);
-
-	return Math.ceil(drawing.size * length / 25);
-};
-
-// Returns the inkusage for a pathpoint
-// (point1, point2, size) or (point1, undefined, size)
-DrawTogether.prototype.inkUsageFromPath = function inkUsageFromPath (point1, point2, size) {
-	var length = size + (point2 ? this.utils.distance(point1[0], point1[1], point2[0], point2[1]) : 0);
-	return Math.ceil(size * length / 25);
-};
-
 DrawTogether.prototype.utils = {
 	distance: function (x1, y1, x2, y2) {
 		// Returns the distance between (x1, y1) and (x2, y2)

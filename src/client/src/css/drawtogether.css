@@ -553,32 +553,6 @@ input.paint-texttool {
   padding:.4em;
 }
 
-.drawtogether-ink-container {
-  position:relative;
-  margin:0.2em;
-  border:0.2em solid #233445;
-  background:#2c4156;
-  text-align:center;
-}
-
-.drawtogether-ink {
-  color:white;
-  background:#789170;
-  font-size:1em;
-  padding:0.5em;
-  white-space: nowrap;
-}
-
-.drawtogether-ink-low {
-  background:#BA1D1D;
-  color:white;
-}
-
-.drawtogether-ink-middle {
-  background:#BA651D;
-  color:white;
-}
-
 /**
  * Sidebar containing chat
  */
