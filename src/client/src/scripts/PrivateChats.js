@@ -4,7 +4,10 @@ function PrivateChats (container, server, account, messages) {
 	this.messages = messages;
 	
 	this.gui = new Gui(this.container);
-	this.socket = io(server);
+	this.socket = io(server, {
+          forceNew: true,
+          transports: ['websocket'],
+	});
 	this.bindSocketListeners();
 
 	this.windows = {};

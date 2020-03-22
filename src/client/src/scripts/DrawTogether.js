@@ -800,6 +800,7 @@ DrawTogether.prototype.changeRoom = function changeRoom (room, number, x, y, spe
 	
 	number = number || "";
 	this.network.loadRoom(room + number, specific, override, function (err, drawings, clickableAreas) {
+		console.log("load room callback");
 		this.changingRoom = false;
 		if (err && err.indexOf("Too many users") !== -1) {
 			this.chat.addMessage("Room '" + room + number + "' is full! Trying " + room + ((number || 0) + 1));
@@ -821,28 +822,6 @@ DrawTogether.prototype.changeRoom = function changeRoom (room, number, x, y, spe
 			if(this.account.uKey) {
 				this.getFavorites();
 				this.getMyProtectedRegions();
-			}
-			
-			// If we are new show the welcome window
-			// Currently disabled
-			if (this.userSettings.getBoolean("Show welcome") && false) {
-				this.openWelcomeWindow();
-
-			// We are not new, check if we already saw all the awesome new features
-			} else if (parseInt(localStorage.getItem("newfeaturewindowversion")) !== this.CLIENT_VERSION) {
-				this.openNewFeatureWindow();
-			
-			// Premium window it is
-			} else if (!localStorage.getItem("wasPremium") && (!localStorage.getItem("premium_window")
-				|| Date.now() - parseInt(localStorage.getItem("premium_window")) > this.PREMIUM_WINDOW_EVERY)) {
-				localStorage.setItem("premium_window", Date.now());
-				this.openPremiumBuyWindow();
-			
-			// Ha lets just self promote scuttlers then
-			} else if (!localStorage.getItem("scuttlers_released")
-				|| Date.now() - parseInt(localStorage.getItem("scuttlers_released")) > this.SCUTTLERS_MESSAGE_EVERY) {
-				localStorage.setItem("scuttlers_released", Date.now());
-				this.createScuttlersOverlay();
 			}
 
 			this.clickableAreas = clickableAreas || [];
@@ -875,8 +854,6 @@ DrawTogether.prototype.joinGame = function joinGame () {
 			this.paint.drawDrawings("public", this.decodeDrawings(drawings));
 			this.chat.addMessage("Welcome to anondraw, enjoy your game!");
 			this.chat.addMessage("Invite friends:", "https://www.anondraw.com/#" + room);
-			
-			this.chat.addMessage("Check out my upcoming game scuttlers", "https://www.youtube.com/watch?v=pE737MO-8YQ");
 			
 			if (this.account.uKey) {
 				this.getFavorites();
@@ -1003,6 +980,7 @@ DrawTogether.prototype.setName = function setName (name) {
 // After joining a room, make sure everything reflects
 // that we joined the given room
 DrawTogether.prototype.setRoom = function setRoom (room) {
+	console.log("setRoom");
 	this.current_room = room;
 	this.roomInput.value = room;
 	

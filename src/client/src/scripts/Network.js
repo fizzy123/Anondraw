@@ -25,6 +25,7 @@ function Network (mainServer) {
 // drawings: [drawingObject, ...]
 
 Network.prototype.loadRoom = function loadRoom (room, specific, override, callback) {
+	console.log("loadRoom")
 	this.getServerFromRoom(room, specific, override, function (err, server) {
 		if (err) {
 			callback(err);
@@ -40,6 +41,7 @@ Network.prototype.loadRoom = function loadRoom (room, specific, override, callba
 
 			// Change our room
 			this.socket.emit("changeroom", room, callback);
+			console.log("emit changeroom");
 		}.bind(this));
 	}.bind(this));
 };
@@ -112,6 +114,7 @@ Network.prototype.getRooms = function getRooms (callback) {
 };
 
 Network.prototype.getServerFromRoom = function getServerFromRoom (room, specific, override, callback) {
+	console.log("getServerFromRoom")
 	var req = new XMLHttpRequest();
 
 	req.addEventListener("readystatechange", function (event) {
@@ -140,6 +143,7 @@ Network.prototype.getServerFromRoom = function getServerFromRoom (room, specific
 
 // If we are not connected to the given server, change our socket
 Network.prototype.changeServer = function changeServer (server, callback) {
+	console.log("changeServer");
 	if (server.indexOf("https://") == -1) server = "https://" + server;
 
 	// If the current socket is to the right server, just callback
@@ -153,7 +157,10 @@ Network.prototype.changeServer = function changeServer (server, callback) {
 		this.socket.disconnect();
 	}
 
-	this.socket = io(server, { forceNew: true });
+	this.socket = io(server, {
+	  forceNew: true,
+	  transports: ['websocket'],
+	});
 	this.reBindHandlers();
 	callback();
 };

@@ -1188,22 +1188,26 @@ Protocol.prototype.bindIO = function bindIO () {
 			callback = (typeof callback == "function") ? callback : function () {};
 
 			if (!room_regex.test(room)) {
+				console.log("Invalid room name")
 				callback("The room can only exist of lowercase letters, numbers and _");
 				return;
 			}
 
 			if (room == socket.room) {
+				console.log("room duplication");
 				callback("You are already in " + socket.room);
 				return;
 			}
 
 			if (protocol.getUserCount(room) > MAX_USERS_IN_ROOM && socket.name.toLowerCase() !== "uberlord") {
+				console.log("too many users");
 				callback("Too many users");
 				return;
 			}
 
 			if (room.indexOf("user_") == 0) {
 				if (parseInt(room.slice(5)) === socket.id) {
+				        console.log("idk???");
 					socket.permissions[parseInt(room.slice(5))] = Number.MAX_SAFE_INTEGER;
 					handleRoom();
 					return;
@@ -1213,6 +1217,7 @@ Protocol.prototype.bindIO = function bindIO () {
 					roomid: parseInt(room.slice(5)),
 					uKey: socket.uKey
 				}, function (err, data) {
+				        console.log("got permissions");
 					if (err || data.err)
 						console.log("Get permission error", data.err);
 					
@@ -1226,6 +1231,7 @@ Protocol.prototype.bindIO = function bindIO () {
 			}
 
 			function handleRoom () {
+				console.log("handle room")
 				// Check if this room should be on this server
 				protocol.register.isOurs(room, function (err, ours) {
 					if (err) {
