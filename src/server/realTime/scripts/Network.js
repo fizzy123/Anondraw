@@ -1034,7 +1034,7 @@ Protocol.prototype.bindIO = function bindIO () {
 
 			var regionData = protocol.isInsideProtectedRegion(socket.reputation, socket.userid, objects, socket.room);
 			
-			if (regionData.inSpawnArea) {
+			if (regionData.inSpawnArea && false) { // modify to re-enable spawn protection
 				if (regionData.oldSpawn) {
 					protocol.informClient(socket, "This spawn has been saved and will remain like this for all eternity, go right for the new spawn.");
 					callback(regionData);
@@ -1054,7 +1054,7 @@ Protocol.prototype.bindIO = function bindIO () {
 					callback(regionData);
 					return;
 				}
-			} else if (!regionData.isAllowed) {
+			} else if (!regionData.isAllowed && false) { // modify to re-enable spawn protection
 				protocol.informClient(socket, "This region is protected!");
 				callback(regionData);
 				return;
@@ -1141,7 +1141,7 @@ Protocol.prototype.bindIO = function bindIO () {
 
 			var regionData = protocol.isInsideProtectedRegion(socket.reputation, socket.userid, objects, socket.room);
 
-			if (regionData.inSpawnArea) {
+			if (regionData.inSpawnArea && false) { // modify to re-enable spawn protection
 				if (regionData.oldSpawn) {
 					protocol.informClient(socket, "This spawn has been saved and will remain like this for all eternity, go right for the new spawn.");
 					callback(regionData);
@@ -1161,7 +1161,7 @@ Protocol.prototype.bindIO = function bindIO () {
 					callback(regionData);
 					return;
 				}
-			} else if (!regionData.isAllowed) {
+			} else if (!regionData.isAllowed && false) { // modify to re-enable spawn protection
 				protocol.informClient(socket, "This region is protected!");
 				callback(regionData);
 				return;
