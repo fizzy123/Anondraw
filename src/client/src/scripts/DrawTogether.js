@@ -5516,53 +5516,11 @@ DrawTogether.prototype.createControlArray = function createControlArray () {
 			intro: "This is your current guest name. Change this to something you like!"
 		}*/
 	},{
-		name: "home-button",
-		type: "button",
-		value: "",
-		text: "Modes",
-		title: "Go to the mode selector",
-		action: this.openModeSelector.bind(this)
-	}, {
-		name: "room-button",
-		type: "button",
-		text: "Rooms",
-		action: this.openRoomWindow.bind(this)
-	}, {
 		name: "settings",
 		type: "button",
 		text: "Settings",
 		action: this.openSettingsWindow.bind(this)
 	}];
-
-	if (location.toString().indexOf("kongregate") == -1) {
-		buttonList.push({
-			name: "account",
-			type: "button",
-			text: "Account",
-			action: this.openAccountWindow.bind(this)
-		});
-	}
-	
-	buttonList.push({
-		name: "premium",
-		type: "button",
-		text: "Premium",
-		action: this.openPremiumBuyWindow.bind(this)
-	});
-
-	buttonList.push({
-		name: "discord",
-		type: "button",
-		text: "Discord chat",
-		action: this.openDiscordWindow.bind(this)
-	});
-	
-	buttonList.push({
-		name: "github",
-		type: "button",
-		text: "Github",
-		action: this.openGithub.bind(this)
-	});
 
 	return buttonList;
 };

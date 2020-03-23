@@ -825,7 +825,16 @@ input.paint-texttool {
 }
 
 .control-button.favorites-button {
+    display: none;
     margin-left: 0.3em;
+}
+
+.control-button.regions-button {
+  display: none;
+}
+
+.control-button.anim-manager-button {
+  display: none;
 }
 
 .control-button.tilesmap-button {
@@ -908,7 +917,7 @@ input.paint-texttool {
     justify-content: normal !important;
   }
   .content-container {
-    left: 3em !important;
+    left: 0em !important;
   }
   .menuItem {
     display: block; 
@@ -1061,10 +1070,20 @@ input.paint-texttool {
 .addthis_sharing_toolbox {
   float:right;
   margin:.3rem .5em 0;
+  display: none;
 }
 
 .favorites-button {
+  display: none;
   padding: 0.3em !important;
+}
+
+.regions-button {
+  display: none;
+}
+
+.anim-manager-button {
+  display: none;
 }
 
 .coords-window {

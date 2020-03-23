@@ -10,6 +10,7 @@
 
 
 .menu {
+	display: none;
 	font-family: 'Noto Sans', sans-serif;
 	position:relative;
 	background:#364350;
@@ -54,7 +55,7 @@
 
 .content-container {
 	position:absolute;
-	left:5em;
+	left:0;
 	top:0;
 	bottom:0;
 	right:0;

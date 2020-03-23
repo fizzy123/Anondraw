@@ -1056,7 +1056,7 @@ Protocol.prototype.bindIO = function bindIO () {
 					callback(regionData);
 					return;
 				}
-			} else if (!regionData.isAllowed && ENABLE_REEGION_PROTECTION) {
+			} else if (!regionData.isAllowed && ENABLE_REGION_PROTECTION) {
 				protocol.informClient(socket, "This region is protected!");
 				callback(regionData);
 				return;
