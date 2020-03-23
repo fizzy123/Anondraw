@@ -254,8 +254,7 @@ Anondraw.prototype.createRouter = function createRouter () {
 			return;
 		}
 		
-		if (false) this.router.navigate("/feed");
-		else this.setContent(this.createHome());
+		this.router.navigate("/collab#main");
 		
 		ga('set', 'page', '/');
 		ga('send', 'pageview');
