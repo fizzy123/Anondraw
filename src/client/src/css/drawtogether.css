@@ -909,7 +909,7 @@ input.paint-texttool {
   }
 }
 
-@media (max-width: 750px) {
+@media (max-width: 961px) {
   .drawtogether-paint-container.fullscreen {
     height: 100% !important;
   }
