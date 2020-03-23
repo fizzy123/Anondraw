@@ -111,7 +111,7 @@ Chat.prototype.addMessage = function addMessage (user, message, userid, socketid
 		var chatFilterByWordsArr = JSON.parse(chatFilterByWordsArrStringified);
 
 	var overrideMuteAll = false;
-	var mute = false;
+	var mute = true;
 	var globalNotification = false;
 	if(chatFilterByWordsArr)
 	for (var k = 0; k < chatFilterByWordsArr.length; k++){
