@@ -8,6 +8,8 @@ var SAT = require('sat');
 var room_regex = /^[a-z0-9_]+$/i;
 var shadowbanned = [];
 
+var ENABLE_REGION_PROTECTION = false;
+
 // User settings
 var MAX_USERS_IN_ROOM = 40;
 var MAX_USERS_IN_GAMEROOM = 12;
@@ -1034,7 +1036,7 @@ Protocol.prototype.bindIO = function bindIO () {
 
 			var regionData = protocol.isInsideProtectedRegion(socket.reputation, socket.userid, objects, socket.room);
 			
-			if (regionData.inSpawnArea && false) { // modify to re-enable spawn protection
+			if (regionData.inSpawnArea && ENABLE_REGION_PROTECTION) {
 				if (regionData.oldSpawn) {
 					protocol.informClient(socket, "This spawn has been saved and will remain like this for all eternity, go right for the new spawn.");
 					callback(regionData);
@@ -1054,7 +1056,7 @@ Protocol.prototype.bindIO = function bindIO () {
 					callback(regionData);
 					return;
 				}
-			} else if (!regionData.isAllowed && false) { // modify to re-enable spawn protection
+			} else if (!regionData.isAllowed && ENABLE_REEGION_PROTECTION) {
 				protocol.informClient(socket, "This region is protected!");
 				callback(regionData);
 				return;
@@ -1141,7 +1143,7 @@ Protocol.prototype.bindIO = function bindIO () {
 
 			var regionData = protocol.isInsideProtectedRegion(socket.reputation, socket.userid, objects, socket.room);
 
-			if (regionData.inSpawnArea && false) { // modify to re-enable spawn protection
+			if (regionData.inSpawnArea && ENABLE_REGION_PROTECTION) {
 				if (regionData.oldSpawn) {
 					protocol.informClient(socket, "This spawn has been saved and will remain like this for all eternity, go right for the new spawn.");
 					callback(regionData);
@@ -1161,7 +1163,7 @@ Protocol.prototype.bindIO = function bindIO () {
 					callback(regionData);
 					return;
 				}
-			} else if (!regionData.isAllowed && false) { // modify to re-enable spawn protection
+			} else if (!regionData.isAllowed && ENABLE_REGION_PROTECTION) {
 				protocol.informClient(socket, "This region is protected!");
 				callback(regionData);
 				return;

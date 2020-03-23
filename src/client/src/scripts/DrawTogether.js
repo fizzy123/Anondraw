@@ -22,6 +22,7 @@ function DrawTogether (container, settings, emotesHash, account, router, pms) {
 	this.nextTip = 0;
 
 	this.MAX_REP_TO_DISPLAY = 300; // if a pregion's minRepAllowed is higher than this. don't mention it to user.
+	this.ENABLE_BRUSH_SIZE_LIMIT = false;
 
 	this.lastBrushSizeWarning = 0;  // Last time we showed the warning that our brush is too big
 	this.lastZoomWarning = 0;       // Last time we showed the zoom warning
@@ -747,17 +748,12 @@ DrawTogether.prototype.displayTip = function displayTip () {
 	];*/
 	
 	var tips = [
-		"We organize a contest, check it out in the left menu.",
 		"Hold alt for color picking",
 		"Try some shortcuts: C, L, B, P, G",
-		"Need more ink? Create an account.",
 		"If you type nyan with a capital, a cat will appear.",
 		"There are a few commands, try typing /me or /help",
 		"If you write kappa with a capital you will get the twitch emote.",
 		"Use transparency to get nicer effects.",
-		"The ▲ next to peoples name is the upvote button.",
-		"Did you know you can ban people once you have 50+ rep?",
-		"Got feedback? There is a button at the left where you can leave it!",
 		"If you click on someones name you will jump to their last draw position!",
 		"Pressing the eye next to someones name will make your screen follow the player."
 	];
@@ -1495,7 +1491,7 @@ DrawTogether.prototype.createDrawZone = function createDrawZone () {
 		if (this.current_room.indexOf("private_") !== 0 && this.current_room.indexOf("game_") !== 0
 			&& !this.memberlevel) {
 
-			if (!(this.reputation >= this.BIG_BRUSH_MIN_REP) &&
+			if (this.ENABLE_BRUSH_SIZE_LIMIT && !(this.reputation >= this.BIG_BRUSH_MIN_REP) &&
 			    ((event.drawing.size > 20 && typeof event.drawing.text == "undefined") || event.drawing.size > 20)) {
 				if (Date.now() - this.lastBrushSizeWarning > 5000) {
 					this.chat.addMessage("Brush sizes above 20 and text sizes above 20 require an account with " + this.BIG_BRUSH_MIN_REP + " reputation! Registering is free and easy. You don't even need to confirm your email!");
@@ -1507,7 +1503,7 @@ DrawTogether.prototype.createDrawZone = function createDrawZone () {
 			}
 
 			// If we are logged out we aren't allowed to draw zoomed out
-			if (this.reputation < this.ZOOMED_OUT_MIN_REP && this.paint.public.zoom < 1) {
+			if (this.ENABLE_BRUSH_SIZE_LIMIT && this.reputation < this.ZOOMED_OUT_MIN_REP && this.paint.public.zoom < 1) {
 				if (Date.now() - this.lastZoomWarning > 5000) {
 					this.chat.addMessage("Drawing while zoomed out this far is only allowed if you have more than " + this.ZOOMED_OUT_MIN_REP + " reputation.");
 				}
@@ -2339,7 +2335,7 @@ DrawTogether.prototype.handlePaintUserPathPoint = function handlePaintUserPathPo
 	if (this.current_room.indexOf("private_") !== 0 && this.current_room.indexOf("game_") !== 0
 		&& !this.memberlevel) {
 
-		if (!(this.reputation >= this.BIG_BRUSH_MIN_REP) && this.lastPathSize > 20) {
+		if (this.ENABLE_BRUSH_SIZE_LIMIT && !(this.reputation >= this.BIG_BRUSH_MIN_REP) && this.lastPathSize > 20) {
 			if (Date.now() - this.lastBrushSizeWarning > 5000) {
 				this.chat.addMessage("Brush sizes above 20 and text sizes above 20 require an account with " + this.BIG_BRUSH_MIN_REP + " reputation! Registering is free and easy. You don't even need to confirm your email!");
 				this.lastBrushSizeWarning = Date.now();
@@ -2350,7 +2346,7 @@ DrawTogether.prototype.handlePaintUserPathPoint = function handlePaintUserPathPo
 		}
 
 		// If we are logged out we aren't allowed to draw zoomed out
-		if (this.reputation < this.ZOOMED_OUT_MIN_REP && this.paint.public.zoom < 1) {
+		if (this.ENABLE_BRUSH_SIZE_LIMIT && this.reputation < this.ZOOMED_OUT_MIN_REP && this.paint.public.zoom < 1) {
 			if (Date.now() - this.lastZoomWarning > 5000) {
 				this.chat.addMessage("Drawing while zoomed out this far is only allowed if you have more than " + this.ZOOMED_OUT_MIN_REP + " reputation.");
 				this.lastZoomWarning = Date.now();
@@ -5040,7 +5036,7 @@ DrawTogether.prototype.createGridInSelection = function createGridInSelection (f
 		
 		var leftTop = [Math.min(from[0], to[0])+leftMargin, Math.min(from[1], to[1])];
 		
-		if (this.reputation >= 5 || (totalWidth > 1000 || sqwidth > 200)) {
+		if (this.ENABLE_BRUSH_SIZE_LIMIT && this.reputation >= 5 || (totalWidth > 1000 || sqwidth > 200)) {
 			console.log("Generating grid", squares, sqwidth, sqheight);
 			this.paint.generateGrid(
 				leftTop,
@@ -5094,7 +5090,7 @@ DrawTogether.prototype.openGenerateGridWindow = function openGenerateGridWindow 
 		var sqwidth = generationSettings.getRangeValue("Width");
 		var sqheight = generationSettings.getRangeValue("Height");
 		
-		if (this.reputation >= 5 || (squares <= 5 && sqwidth <= 200 && sqheight <= 200)) {
+		if (this.ENABLE_BRUSH_SIZE_LIMIT && this.reputation >= 5 || (squares <= 5 && sqwidth <= 200 && sqheight <= 200)) {
 			console.log("Generating grid", squares, sqwidth, sqheight);
 			this.paint.generateGrid(
 				[parseInt(generationSettings.getText("Left top x")), parseInt(generationSettings.getText("Left top y"))],
